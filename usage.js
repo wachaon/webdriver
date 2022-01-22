@@ -1,4 +1,4 @@
-const {Window} = require('webdriver')
+const {Window} = require('./index')
 
 const window = new Window()
 const {document} = window
@@ -13,7 +13,7 @@ window.navigate('https://www.google.co.jp')
 let [input] = document.querySelectorAll('[name="q"]')
 input.setValue('selenium')
 
-let [but] = document.querySelectorAll('input[value="Google 検索"]')
+let [but] = document.querySelectorAll('input[name="btnK"]')
 but.click()
 
 window.close('end')

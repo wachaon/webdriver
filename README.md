@@ -1,15 +1,25 @@
 # webdriver
-*Internet Explorer* が 2022/6/16 から使用不可になることで、*windows script host* で操作はできなくなります。
+*Internet Explorer* が 2022/6/16 から使用不可になることで、*windows script host* ではブラウザーの操作ができなくなります。
 
 ブラウザーを操作するならば、*web driver* 経由で *Microsoft Edge based on Chromium* を操作する必要があります。
 
-このモジュールは*web driver*の操作を簡略化します。
+このモジュールは *web driver* の操作を簡略化します。
+
+## このモジュールのインストール
+
+```shell
+wes install @wachaon/webdriver --unsafe --bare
+```
 
 ## *web driver* をインストールする
 
 *web driver* は使用するブラウザーとバージョンを同じにしなければなりません。
 
 このモジュールをコマンドラインから直接指定すれば、ブラウザーのバージョンとアーキテクチャーが同じ *web driver* をダウンロードします。
+
+```shell
+wes webdriver
+```
 
 ダウンロードした zip を解凍して *msedgedriver.exe* を取り出してください。
 
@@ -28,12 +38,12 @@ window.rect({
     width: 1280,
     height: 600
 })
-window.navigate('https://www.google.co.jp')
+window.navigate('https://www.google.com')
 
 let [input] = document.querySelectorAll('[name="q"]')
 input.setValue('selenium')
 
-let [but] = document.querySelectorAll('input[value="Google 検索"]')
+let [but] = document.querySelectorAll('input[name="btnK"]')
 but.click()
 
 window.close('end')
@@ -49,9 +59,9 @@ window.close('end')
 
 ### `constructor(port, spec)`
 
-`port` は *web driver* と通信するポートを指定します。既定値は `9515` ですが、ポートが使用済みの場合は使用可能なポートを自動で探します。
+`port` は *web driver* と通信するポートを指定します。既定値は `9515` ですが、`9515` ポートが使用済みの場合は使用可能なポートを探します。
 
-`spec` は *web driver* のファイルパスを指定します。既定値は `msedgedriver.exe` です。相対パスの場合はカレントディレクトリからの相対パスで指定します。
+`spec` は *web driver* のファイルパスを指定します。既定値は `msedgedriver.exe` です。相対パスで指定する場合はカレントディレクトリからの相対パスにします。
 
 ### `rect(prop)`
 
@@ -65,7 +75,7 @@ window.close('end')
 ### `close(message)`
 
 ブラウザの操作を終了します。
-`message` を指定した場合にのみ、コンソールにメッセージを表示します。
+`message` を指定した場合は、終了後にコンソールへ `message` を表示します。
 
 ### `getURL()`
 
