@@ -213,7 +213,7 @@ function request(Server, method, url, parameter, processing, finished) {
         console.print('%S%S%S %S %O', BOL, eraseInLine(0), processing, spiner(), State[Server.readyState])
         WScript.Sleep(50)
     }
-    if (finished != null) console.print('%S%S%O\n', BOL, eraseInLine(0), message)
+    if (finished != null) console.print('%S%S%O\n', BOL, eraseInLine(0), finished)
     console.print('%S%S', BOL, eraseInLine(0))
 
     const res = Server.responseText
