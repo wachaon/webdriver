@@ -131,7 +131,7 @@ class Element {
         this.parentDocument = document
         this.elementId = elementId
     }
-    querySelectorAll (selector) {
+    querySelectorAll(selector) {
         const document = this.parentDocument
         const window = document.parentWindow
         const res = require(window.IServerXMLHTTPRequest2, POST, `http://localhost:${window.port}/session/${window.sessionId}/element/${this.elementId}/elements`, {
@@ -141,7 +141,7 @@ class Element {
         const elms = res != null ? res.value.map((val) => new Element(document, val[ELEMENT_ID])) : null
         return elms
     }
-    getAttribute (attribute) {
+    getAttribute(attribute) {
         const window = this.parentDocument.parentWindow
         const res = request(
             window.IServerXMLHTTPRequest2,
@@ -152,7 +152,7 @@ class Element {
         )
         return res ? res.value : 'null'
     }
-    getProperty (property) {
+    getProperty(property) {
         const window = this.parentDocument.parentWindow
         const res = request(
             window.IServerXMLHTTPRequest2,
