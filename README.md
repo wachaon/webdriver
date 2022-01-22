@@ -107,11 +107,11 @@ window.close('end')
 
 ### `getAttribute (attribute)`
 
-現在の要素の *html attribute* を取得します。
+現在の要素の *element attribute* を取得します。
 
 ### `getProperty (property)`
 
-現在の `Elemet` の *javascript object* を取得します。
+現在の要素の *javascript object* を取得します。
 
 ### `click()`
 
