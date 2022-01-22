@@ -82,7 +82,8 @@ class Window {
         const res = request(
             this.IServerXMLHTTPRequest2,
             GET,
-            `http://localhost:${this.port}/session/${this.sessionId}/url`
+            `http://localhost:${this.port}/session/${this.sessionId}/url`,
+            'Get URL'
         )
         return res ? res.value : 'null'
     }
