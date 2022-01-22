@@ -83,9 +83,10 @@ class Window {
             this.IServerXMLHTTPRequest2,
             GET,
             `http://localhost:${this.port}/session/${this.sessionId}/url`,
+            null,
             'Get URL'
         )
-        return res ? res.value : 'null'
+        return res ? res.value : null
     }
     back() {
         request(
