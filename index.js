@@ -1,12 +1,12 @@
 const WShell = require('WScript.Shell')
-const { eraseInLine, brightGreen } = require('ansi')
+const { eraseInLine, cursorHrAbs, brightGreen } = require('ansi')
 const { download } = require('filesystem')
 const { resolve, WorkingDirectory } = require('pathname')
 
 const GET = 'GET'
 const POST = 'POST'
 const DELETE = 'DELETE'
-const BOL = '\u001B[0F\u001B[0E' // beginning of line
+const BOL = cursorHrAbs(1) // beginning of line
 const ELEMENT_ID = 'element-6066-11e4-a52e-4f735466cecf'
 const State = ['UNINITIALIZED', 'LOADING', 'LOADED', 'INTERACTIVE', 'COMPLETED']
 const spiner = progress(['|', '/', '-', '\\', '|', '/', '-', '\\'])
@@ -115,7 +115,10 @@ class Document {
             },
             'Select Elements'
         )
-        const elms = res != null ? res.value.map((val) => new Element(this, val[ELEMENT_ID])) : null
+        const elms =
+            res != null
+                ? res.value.map((val) => new Element(this, val[ELEMENT_ID]))
+                : null
         return elms
     }
     getTitle() {
@@ -140,7 +143,10 @@ class Element {
             using: 'css selector',
             value: selector
         }, 'Select Elements')
-        const elms = res != null ? res.value.map((val) => new Element(document, val[ELEMENT_ID])) : null
+        const elms =
+            res != null
+                ? res.value.map((val) => new Element(document, val[ELEMENT_ID]))
+                : null
         return elms
     }
     getAttribute(attribute) {
@@ -195,28 +201,41 @@ function getWebDriver() {
     ).StdOut.ReadAll()
 
     const architecture =
-        require('WScript.Shell').Environment('Process').Item('PROCESSOR_ARCHITECTURE') === 'x86' ? '32' : '64'
+        require('WScript.Shell')
+            .Environment('Process')
+            .Item('PROCESSOR_ARCHITECTURE') === 'x86'
+            ? '32'
+            : '64'
 
     const url = `https://msedgedriver.azureedge.net/${version}/edgedriver_win${architecture}.zip`
 
-    download(url, resolve(WorkingDirectory, `edgedriver_win${architecture}.zip`))
+    download(
+        url,
+        resolve(WorkingDirectory, `edgedriver_win${architecture}.zip`)
+    )
     console.log('%sDownload of webdriver is complete!', brightGreen)
 }
 
 // util
-function request(Server, method, url, parameter, processing, finished) {
+function request(
+    Server,
+    method,
+    url,
+    parameter,
+    processing = '',
+    finished = ''
+) {
     Server.open(method, url, true)
-    if (parameter != null) {
+    if (method.toUpperCase === POST)
         Server.setRequestHeader('Content-Type', 'application/json')
-        Server.send(JSON.stringify(parameter))
-    } else Server.send()
+    if (parameter != null) Server.send(JSON.stringify(parameter))
+    else Server.send()
 
     while (State[Server.readyState] != 'COMPLETED') {
-        console.print('%S%S%S %S %O', BOL, eraseInLine(0), processing, spiner(), State[Server.readyState])
+        console.print('%S%S %S%S', eraseInLine(0), processing, spiner(), BOL)
         WScript.Sleep(50)
     }
-    if (finished != null) console.print('%S%S%O\n', BOL, eraseInLine(0), finished)
-    console.print('%S%S', BOL, eraseInLine(0))
+    console.print('%S%S', eraseInLine(0), finished)
 
     const res = Server.responseText
     return JSON.parse(res)
@@ -236,7 +255,9 @@ function findUnusedPort(port) {
 
     while (true) {
         port = port || parseInt(Math.random() * (65535 - 49152)) + 49152
-        const exp = new RegExp('(TCP|UDP)\\s+\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}:' + port + '\\s')
+        const exp = new RegExp(
+            '(TCP|UDP)\\s+\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}:' + port + '\\s'
+        )
         if (!exp.test(res)) break
         port = null
     }
