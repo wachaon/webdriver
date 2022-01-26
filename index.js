@@ -97,6 +97,16 @@ class Window {
             'History Back'
         )
     }
+    status () {
+        const res = request(
+            this.IServerXMLHTTPRequest2,
+            GET,
+            `http://localhost:${this.port}/status`,
+            null,
+            'status'
+        )
+        if (res) return res.value
+    }
 }
 
 class Document {
