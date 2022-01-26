@@ -97,7 +97,7 @@ class Window {
             'History Back'
         )
     }
-    status () {
+    getStatus () {
         const res = request(
             this.IServerXMLHTTPRequest2,
             GET,
@@ -107,6 +107,7 @@ class Window {
         )
         if (res) return res.value
     }
+
 }
 
 class Document {

@@ -16,7 +16,7 @@ input.setValue('selenium')
 let [but] = document.querySelectorAll('input[name="btnK"]')
 but.click()
 
-let status = window.status()
+let status = window.getStatus()
 console.log('%O', status)
 
 window.close('end')
