@@ -1,9 +1,0 @@
-/.gitignore
-
-/node_modules
-
-/dev
-
-/msedgedriver.exe
-
-/.prettierrrc
