@@ -35,7 +35,7 @@ class Window {
       {
         capabilities: {},
       },
-      "Initialize"
+      "Initialize Session"
     );
     const { sessionId } = value;
 
@@ -52,7 +52,7 @@ class Window {
       POST,
       `http://localhost:${this.port}/session/${this.sessionId}/window/rect`,
       prop,
-      "window rect"
+      "Set Window Rect"
     );
   }
   navigate(url) {
@@ -63,7 +63,7 @@ class Window {
       {
         url: url,
       },
-      "Navegate"
+      "Navegate URL"
     );
   }
   close(messame) {
@@ -100,8 +100,17 @@ class Window {
       POST,
       `http://localhost:${this.port}/session/${this.sessionId}/back`,
       {},
-      "History Back"
-    );
+      "Back History"
+    )
+  }
+  forward() {
+    request(
+      this.IServerXMLHTTPRequest2,
+      POST,
+      `http://localhost:${this.port}/session/${this.sessionId}/forward`,
+      {},
+      "Forward History"
+    )
   }
   getStatus() {
     const res = request(
@@ -109,7 +118,7 @@ class Window {
       GET,
       `http://localhost:${this.port}/status`,
       null,
-      "status"
+      "Get Status"
     );
     if (res) return res.value;
   }
