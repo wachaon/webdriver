@@ -1,4 +1,5 @@
 const {Window} = require('./index')
+const genGUID = require('genGUID')
 
 const window = new Window()
 const {document} = window
@@ -16,7 +17,20 @@ input.setValue('selenium')
 let [but] = document.querySelectorAll('input[name="btnK"]')
 but.click()
 
+
 let status = window.getStatus()
 console.log('%O', status)
+
+const name = genGUID()
+
+window.addCookie({
+    "name": name,
+    "value": genGUID(),
+})
+console.log('%O', window.getCookie(name))
+window.deleteCookie(name)
+
+//console.log('%O', window.getCookie())
+
 
 window.close('end')
