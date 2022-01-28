@@ -3,7 +3,7 @@
 
 ブラウザーを操作するならば、*web driver* 経由で *Microsoft Edge based on Chromium* を操作する必要があります。
 
-このモジュールは *web driver* の操作を簡略化します。
+このモジュールは *web driver* の操作を支援します。
 
 ## このモジュールのインストール
 
@@ -13,7 +13,7 @@ wes install @wachaon/webdriver --unsafe --bare
 
 ## *web driver* をインストールする
 
-*web driver* は使用するブラウザーとバージョンを同じにしなければなりません。
+*web driver* とブラウザーは同じバージョンのものを使用する必要があります。
 
 このモジュールをコマンドラインから直接指定すれば、ブラウザーのバージョンとアーキテクチャーが同じ *web driver* をダウンロードします。
 
@@ -84,6 +84,18 @@ window.close('end')
 ### `back()`
 
 ブラウザの履歴から一つ戻ります。
+
+### `getCookie(name)`
+
+クッキーを取得します。`name` があればその名前のクッキーを取得、`name` がなければ全てのクッキーを取得します。
+
+### `setCookie(object)`
+
+クッキーを設定します。
+
+### `deleteCookie(name)`
+
+`name` のクッキーを削除します。
 
 ## `Document` クラス
 
