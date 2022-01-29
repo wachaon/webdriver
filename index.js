@@ -18,10 +18,7 @@ class Window {
         port = port || findUnusedPort(9515)
         spec = spec || 'msedgedriver.exe'
         const driver = WShell.Exec(`${spec} port=${port}`)
-        while (driver.Status != 0) {
-            console.print('%S%S %S', eraseInLine(1), 'driver ', spiner())
-            WScript.Sleep(50)
-        }
+
         var { value } = request(
             IServerXMLHTTPRequest2,
             POST,
@@ -40,7 +37,6 @@ class Window {
         this.document = new Document(this)
     }
     rect(prop) {
-        // {x, y, width, height}
         request(
             this.IServerXMLHTTPRequest2,
             POST,
@@ -60,7 +56,7 @@ class Window {
             'Navegate URL'
         )
     }
-    close(messame) {
+    close(message) {
         request(
             this.IServerXMLHTTPRequest2,
             DELETE,
@@ -76,7 +72,7 @@ class Window {
             'Delete Session'
         )
         this.driver.Terminate()
-        console.log(messame || '')
+        if (message != null) console.log(message)
     }
     getURL() {
         const res = request(
@@ -121,13 +117,14 @@ class Window {
         const res = request(this.IServerXMLHTTPRequest2, GET, url, null, 'Get Cookie')
         return res ? res.value : null
     }
-    addCookie(field) {
-        const cookie = { cookie: field }
+    addCookie(cookie) {
+        // cookie: {name: string, value: string, domain: string?, httpOnly: boolean?, path: string?, secure: boolean?}
+        const parameter = { cookie: cookie }
         const res = request(
             this.IServerXMLHTTPRequest2,
             POST,
             `http://localhost:${this.port}/session/${this.sessionId}/cookie`,
-            cookie,
+            parameter,
             'Add Cookie'
         )
         return res ? res.value : null
