@@ -136,7 +136,7 @@ window.close('end')
 
 ### `getProperty (property)`
 
-現在の要素の *javascript object* を取得します。
+現在の要素の *javascript property* を取得します。
 
 ### `click()`
 
