@@ -1,7 +1,7 @@
 # webdriver
-*Internet Explorer* が 2022/6/16 から使用不可になることで、*windows script host* ではブラウザーの操作ができなくなります。
+*Internet Explorer* が 2022/6/15 にサポート対象外になることにより、*windows script host* ではブラウザーの操作ができなくなる可能性があります。
 
-ブラウザーを操作するならば、*web driver* 経由で *Microsoft Edge based on Chromium* を操作する必要があります。
+その場合にブラウザを操作するならば、*web driver* 経由で *Microsoft Edge based on Chromium* を操作する必要があります。
 
 このモジュールは *web driver* の操作を支援します。
 
@@ -13,9 +13,9 @@ wes install @wachaon/webdriver --unsafe --bare
 
 ## *web driver* をインストールする
 
-*web driver* とブラウザーは同じバージョンのものを使用する必要があります。
+*web driver* とブラウザは同じバージョンのものを使用する必要があります。
 
-このモジュールをコマンドラインから直接指定すれば、ブラウザーのバージョンとアーキテクチャーが同じ *web driver* をダウンロードします。
+このモジュールをコマンドラインから直接指定すれば、ブラウザのバージョンとアーキテクチャーが同じ *web driver* をダウンロードします。
 
 ```shell
 wes webdriver
