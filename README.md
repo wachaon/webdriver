@@ -28,7 +28,7 @@ wes webdriver
 下記スクリプトを実行して動作を確認してくだい。
 
 ```javascript
-const { Window } = require('./index')
+const { Window } = require('edge')
 const genGUID = require('genGUID')
 
 const window = new Window()
