@@ -16,17 +16,19 @@ input.setValue('selenium')
 
 let [form] = document.querySelectorAll('form')
 let [but] = form.querySelectorAll('input[name="btnK"]')
+console.log('outerHTML // => %O', but.getProperty('outerHTML'))
+console.log('but class=%O', but.getAttribute('class'))
 but.click()
 
 let status = window.getStatus()
-console.log('%O', status)
+console.log('Status: %O', status)
 
 const name = genGUID()
 window.addCookie({
     name: name,
     value: genGUID()
 })
-console.log('%O', window.getCookie(name))
+console.log('getCookie(%O) // => %O', name, window.getCookie(name))
 window.deleteCookie(name)
 
-window.close('end')
+window.close('finished')
