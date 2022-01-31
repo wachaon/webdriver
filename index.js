@@ -108,7 +108,7 @@ class Window {
             GET,
             `http://localhost:${this.port}/status`,
             null,
-            '' //'Get Status'
+            null //'Get Status'
         )
         if (res) return res.value
     }
@@ -256,7 +256,6 @@ function request(Server, method, url, parameter, processing, finished = '') {
     if (method.toUpperCase === POST) Server.setRequestHeader('Content-Type', 'application/json')
     if (parameter != null) Server.send(JSON.stringify(parameter))
     else Server.send()
-
 
     while (State[Server.readyState] != 'COMPLETED') {
         if (processing !== null) console.print('%S%S %S%S', eraseInLine(0), processing, spiner(), BOL)
