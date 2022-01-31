@@ -108,7 +108,7 @@ class Window {
             GET,
             `http://localhost:${this.port}/status`,
             null,
-            null //'Get Status'
+            'Get Status'
         )
         if (res) return res.value
     }
