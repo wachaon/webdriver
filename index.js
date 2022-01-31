@@ -108,7 +108,7 @@ class Window {
             GET,
             `http://localhost:${this.port}/status`,
             null,
-            'Get Status'
+            '' //'Get Status'
         )
         if (res) return res.value
     }
@@ -251,14 +251,15 @@ function getWebDriver() {
 }
 
 // util
-function request(Server, method, url, parameter, processing = '', finished = '') {
+function request(Server, method, url, parameter, processing, finished = '') {
     Server.open(method, url, true)
     if (method.toUpperCase === POST) Server.setRequestHeader('Content-Type', 'application/json')
     if (parameter != null) Server.send(JSON.stringify(parameter))
     else Server.send()
 
+
     while (State[Server.readyState] != 'COMPLETED') {
-        console.print('%S%S %S%S', eraseInLine(0), processing, spiner(), BOL)
+        if (processing !== null) console.print('%S%S %S%S', eraseInLine(0), processing, spiner(), BOL)
         WScript.Sleep(50)
     }
     console.print('%S%S', eraseInLine(0), finished)
