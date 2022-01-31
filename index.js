@@ -261,7 +261,7 @@ function request(Server, method, url, parameter, processing, finished) {
         if (processing !== null) console.print('%S%S %S%S', eraseInLine(0), processing, spiner(), BOL)
         WScript.Sleep(50)
     }
-    if (finished !== null) console.print('%S%S', eraseInLine(0), finished)
+    if (finished != null) console.print('%S%S', eraseInLine(0), finished)
 
     const res = Server.responseText
     return JSON.parse(res)
