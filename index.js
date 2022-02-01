@@ -167,6 +167,20 @@ class Document {
             `http://localhost:${window.port}/session/${window.sessionId}/title`
         )
     }
+    executeScript(script = 'return void 0', args = []) {
+        const window = this.parentWindow
+        const res = request(
+            window.IServerXMLHTTPRequest2,
+            POST,
+            `http://localhost:${window.port}/session/${window.sessionId}/execute/sync`,
+            {
+                script,
+                args
+            },
+            'Execute Script'
+        )
+        return res ? res.value : null
+    }
 }
 
 class Element {
@@ -262,6 +276,7 @@ function request(Server, method, url, parameter, processing, finished) {
         WScript.Sleep(50)
     }
     if (finished != null) console.print('%S%S', eraseInLine(0), finished)
+    else console.print('%S', eraseInLine(0))
 
     const res = Server.responseText
     return JSON.parse(res)

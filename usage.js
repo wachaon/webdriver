@@ -12,7 +12,7 @@ window.rect({
 window.navigate('https://www.google.co.jp')
 
 let [input] = document.querySelectorAll('[name="q"]')
-input.setValue('selenium'){}
+input.setValue('selenium')
 
 let [form] = document.querySelectorAll('form')
 let [but] = form.querySelectorAll('input[name="btnK"]')
