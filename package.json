@@ -1,6 +1,6 @@
 {
   "name": "webdriver",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Operate the browser with wes",
   "main": "index.js",
   "scripts": {
