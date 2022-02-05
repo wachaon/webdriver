@@ -20,7 +20,7 @@ class Window {
 
         port = port || findUnusedPort(9515)
         spec = spec || 'msedgedriver.exe'
-        const driver = WShell.Exec(`${spec} port=${port}`)
+        const driver = WShell.Exec(`${spec} --port=${port} --silent`)
 
         var { value } = request(
             IServerXMLHTTPRequest2,
