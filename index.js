@@ -1,7 +1,9 @@
 const WShell = require('WScript.Shell')
-const { eraseInLine, cursorHrAbs, brightGreen } = require('ansi')
+const { eraseInLine, cursorHrAbs, color } = require('ansi')
 const { download } = require('filesystem')
-const { resolve, WorkingDirectory } = require('pathname')
+const { resolve, WorkingDirectory, toPosixSep } = require('pathname')
+const { unzip } = require('zip')
+const { moveFileSync, deleteFileSync, deletedirSync, existsFileSync, existsdirSync } = require('filesystem')
 
 const GET = 'GET'
 const POST = 'POST'
@@ -9,7 +11,8 @@ const DELETE = 'DELETE'
 const BOL = cursorHrAbs(1) // beginning of line
 const ELEMENT_ID = 'element-6066-11e4-a52e-4f735466cecf'
 const State = ['UNINITIALIZED', 'LOADING', 'LOADED', 'INTERACTIVE', 'COMPLETED']
-const spiner = progress(['|', '/', '-', '\\', '|', '/', '-', '\\'])
+const spiner = progress(['|', '/', '-', '\\'])
+const orange = color('#FFA500')
 
 class Window {
     constructor(port, spec) {
@@ -250,18 +253,41 @@ class Element {
     }
 }
 
-function getWebDriver() {
-    const version = WShell.exec(
+function getChromeVersion(spec = '"C:\\Program Files (x86)\\Google\\Chrome\\Application"') {
+    const [version] = WShell.exec(
+        `cmd /C dir /B /O-N ${spec}`
+    ).StdOut.ReadAll().trim().split(/\r?\n/).slice(-1)
+    return version
+}
+
+function getChromeDriverVersion(spec = 'chromedriver.exe') {
+    return WShell.exec(
+        `cmd /C ${spec} -v`
+    ).StdOut.ReadAll().trim().replace(/^ChromeDriver ([\d\.]+) .+/, '$1')
+}
+
+function getFireFoxVersion(spec = '"C:\\Program Files\\Mozilla Firefox\\firefox.exe"') {
+    return WShell.exec(
+        `cmd /C ${spec} -v`
+    ).StdOut.ReadAll().trim().slice('Mozilla Firefox '.length)
+}
+
+function getFireFoxDriverVersion(spec = 'geckodriver.exe') {
+    return WShell.exec(
+        `cmd /C ${spec} -V`
+    ).StdOut.ReadAll().trim().split(/\r?\n/)[0].replace(/^geckodriver ([\d\.]+) .+/, '$1')
+}
+
+function getEdgeVersion() {
+    return WShell.exec(
         'powershell -Command Get-AppxPackage -Name Microsoft.MicrosoftEdge.* | foreach{$_.Version}'
-    ).StdOut.ReadAll()
+    ).StdOut.ReadAll().trim()
+}
 
-    const architecture =
-        require('WScript.Shell').Environment('Process').Item('PROCESSOR_ARCHITECTURE') === 'x86' ? '32' : '64'
-
-    const url = `https://msedgedriver.azureedge.net/${version}/edgedriver_win${architecture}.zip`
-
-    download(url, resolve(WorkingDirectory, `edgedriver_win${architecture}.zip`))
-    console.log('%sDownload of webdriver is complete!', brightGreen)
+function getEdgeDriverVersion(spec = 'msedgedriver.exe') {
+    return WShell.exec(
+        `cmd /C ${spec} -v`
+    ).StdOut.ReadAll().trim().replace(/^MSEdgeDriver ([\d\.]+) .+/, '$1')
 }
 
 // util
@@ -303,14 +329,45 @@ function findUnusedPort(port) {
     return port
 }
 
+function getEdgeWebDriver(version) {
+    const filename = 'msedgedriver.exe'
+    const architecture = WShell
+        .Environment('Process')
+        .Item('PROCESSOR_ARCHITECTURE') === 'x86' ? '32' : '64'
+
+    const url = `https://msedgedriver.azureedge.net/${version}/edgedriver_win${architecture}.zip`
+    const zipSpec = resolve(WorkingDirectory, `edgedriver_win${architecture}.zip`)
+    let dirSpec
+    let fileSpec = resolve(WorkingDirectory, filename)
+    try {
+        console.log(download(url, zipSpec))
+        console.log('unzip %O', dirSpec = toPosixSep(unzip(zipSpec)))
+        console.log(moveFileSync(resolve(dirSpec, filename), fileSpec))
+        console.log(deletedirSync(dirSpec))
+        console.log(deleteFileSync(zipSpec))
+        console.log('%SDownload of webdriver is complete. version: %S', orange, browser)
+    } catch (error) {
+        console.log('%SFailed to download webdriver. version %S', orange, browser)
+        throw error
+    } finally {
+        if (existsFileSync(zipSpec)) console.log(deleteFileSync(zipSpec))
+        if (existsdirSync(dirSpec)) console.log(deletedirSync(dirSpec))
+    }
+}
+
 // exports
 module.exports = {
     Window,
     Document,
     Element,
     request,
-    getWebDriver
+    getEdgeWebDriver,
 }
 
 // command line
-if (wes.Modules[wes.main].path === __filename) getWebDriver()
+if (wes.Modules[wes.main].path !== __filename) return
+
+const browser = getEdgeVersion()
+const webdriver = getEdgeDriverVersion()
+if (browser === webdriver) return console.log('Both are installed with the correct version // => %O', browser)
+getEdgeWebDriver(browser)
