@@ -346,7 +346,7 @@ function getEdgeWebDriver() {
     try {
         console.log(download(url, zipSpec))
         console.log('unzip %O', dirSpec = toPosixSep(unzip(zipSpec)))
-        if (exists(fileSpec)) deleteFileSync(fileSpec)
+        if (existsFileSync(fileSpec)) deleteFileSync(fileSpec)
         console.log(moveFileSync(resolve(dirSpec, filename), fileSpec))
         console.log(deletedirSync(dirSpec))
         console.log(deleteFileSync(zipSpec))
