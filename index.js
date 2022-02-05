@@ -329,7 +329,11 @@ function findUnusedPort(port) {
     return port
 }
 
-function getEdgeWebDriver(version) {
+function getEdgeWebDriver() {
+    const version = getEdgeVersion()
+    const driver = getEdgeDriverVersion()
+    if (version === driver) return console.log('Both are installed with the correct version // => %O', browser)
+
     const filename = 'msedgedriver.exe'
     const architecture = WShell
         .Environment('Process')
@@ -366,9 +370,4 @@ module.exports = {
 }
 
 // command line
-if (wes.Modules[wes.main].path !== __filename) return
-
-const browser = getEdgeVersion()
-const webdriver = getEdgeDriverVersion()
-if (browser === webdriver) return console.log('Both are installed with the correct version // => %O', browser)
-getEdgeWebDriver(browser)
+if (wes.Modules[wes.main].path === __filename) getEdgeWebDriver()
