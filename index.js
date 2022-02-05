@@ -332,7 +332,7 @@ function findUnusedPort(port) {
 function getEdgeWebDriver() {
     const version = getEdgeVersion()
     const driver = getEdgeDriverVersion()
-    if (version === driver) return console.log('Both are installed with the correct version // => %O', browser)
+    if (version === driver) return console.log('Both are installed with the correct version // => %O', version)
 
     const filename = 'msedgedriver.exe'
     const architecture = WShell
