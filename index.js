@@ -350,9 +350,9 @@ function getEdgeWebDriver() {
         console.log(moveFileSync(resolve(dirSpec, filename), fileSpec))
         console.log(deletedirSync(dirSpec))
         console.log(deleteFileSync(zipSpec))
-        console.log('%SDownload of webdriver is complete. version: %S', orange, browser)
+        console.log('%SDownload of webdriver is complete. version: %S', orange, version)
     } catch (error) {
-        console.log('%SFailed to download webdriver. version %S', orange, browser)
+        console.log('%SFailed to download webdriver. version %S', orange, version)
         throw error
     } finally {
         if (existsFileSync(zipSpec)) console.log(deleteFileSync(zipSpec))
