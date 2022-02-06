@@ -170,14 +170,15 @@ class Document {
             `http://localhost:${window.port}/session/${window.sessionId}/title`
         )
     }
-    executeScript(script = 'return void 0', args = []) {
+    executeScript(script = function () { }, args = []) {
+        const code = `return (${String(script)})(...arguments)`
         const window = this.parentWindow
         const res = request(
             window.IServerXMLHTTPRequest2,
             POST,
             `http://localhost:${window.port}/session/${window.sessionId}/execute/sync`,
             {
-                script,
+                script: code,
                 args
             },
             'Execute Script'
