@@ -184,6 +184,34 @@ class Document {
         )
         return res ? res.value : null
     }
+    xpath(path) {
+        const window = this.parentWindow
+        const res = request(
+            window.IServerXMLHTTPRequest2,
+            POST,
+            `http://localhost:${window.port}/session/${window.sessionId}/elements`,
+            {
+                using: 'xpath',
+                value: path
+            },
+            'Select Elements'
+        )
+        const elms = res || null
+        return elms
+    }
+    getSource() {
+        const window = this.parentWindow
+        const res = request(
+            window.IServerXMLHTTPRequest2,
+            GET,
+            `http://localhost:${window.port}/session/${window.sessionId}/source`,
+            {},
+            'Get Source'
+        )
+        return res ? res.value : null
+    }
+
+
 }
 
 class Element {
@@ -253,6 +281,7 @@ class Element {
     }
 }
 
+// util
 function getChromeVersion(spec = '"C:\\Program Files (x86)\\Google\\Chrome\\Application"') {
     const [version] = WShell.exec(
         `cmd /C dir /B /O-N ${spec}`
@@ -290,7 +319,6 @@ function getEdgeDriverVersion(spec = 'msedgedriver.exe') {
     ).StdOut.ReadAll().trim().replace(/^MSEdgeDriver ([\d\.]+) .+/, '$1')
 }
 
-// util
 function request(Server, method, url, parameter, processing, finished) {
     Server.open(method, url, true)
     if (method.toUpperCase === POST) Server.setRequestHeader('Content-Type', 'application/json')
