@@ -126,6 +126,24 @@ window.close('finished')
 
 タイトルを取得します。
 
+### `getSource()`
+
+*html* を取得します。
+
+### `executeScript(script, args)`
+
+`script` は関数オブジェクトを渡します。`script` は内部で `String(script)` で文字列に変換されるので、
+関数外部の参照はできません。
+
+```javascript
+document.executeScript(
+    function (text) {
+        document.getElementsByTagName('input')[0].value = text
+    },
+    ["hello world"]
+)
+```
+
 ## `Element` クラス
 
 ### `querySelectorAll(selector)`
