@@ -4,6 +4,7 @@ const { download } = require('filesystem')
 const { resolve, WorkingDirectory, toPosixSep } = require('pathname')
 const { unzip } = require('zip')
 const { moveFileSync, deleteFileSync, deletedirSync, existsFileSync, existsdirSync } = require('filesystem')
+const { has } = require('argv')
 
 const GET = 'GET'
 const POST = 'POST'
@@ -211,8 +212,6 @@ class Document {
         )
         return res ? res.value : null
     }
-
-
 }
 
 class Element {
@@ -399,4 +398,6 @@ module.exports = {
 }
 
 // command line
-if (wes.Modules[wes.main].path === __filename) getEdgeWebDriver()
+if (wes.Modules[wes.main].path === __filename) {
+    if (has('d') || has('download')) getEdgeWebDriver()
+}
