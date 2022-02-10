@@ -325,12 +325,15 @@ function request(Server, method, url, parameter, processing, finished) {
     if (parameter != null) Server.send(JSON.stringify(parameter))
     else Server.send()
 
+    let display
     while (State[Server.readyState] != 'COMPLETED') {
-        if (processing !== null) console.print('%S%S %S%S', eraseInLine(0), processing, spiner(), BOL)
+        display = `${BOL}${processing} ${spiner()}${eraseInLine(0)}`
+        if (processing !== null) console.print(display)
         WScript.Sleep(50)
     }
-    if (finished != null) console.print('%S%S', eraseInLine(0), finished)
-    else console.print('%S', eraseInLine(0))
+    if (finished != null) display = `${BOL}${finished}${eraseInLine(0)}`
+    else display = `${BOL}${eraseInLine(0)}`
+    console.print(display)
 
     const res = Server.responseText
     return JSON.parse(res)
