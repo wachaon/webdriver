@@ -332,7 +332,6 @@ function request(Server, method, url, parameter, processing, finished) {
         WScript.Sleep(50)
     }
     if (finished != null) display = `${BOL}${finished}${eraseInLine(0)}`
-    else display = `${BOL}${eraseInLine(0)}`
     console.print(display)
 
     const res = Server.responseText
