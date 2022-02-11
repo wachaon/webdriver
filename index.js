@@ -143,6 +143,27 @@ class Window {
             'Delete Cookie'
         )
     }
+    getHandles() {
+        const res = request(
+            this.IServerXMLHTTPRequest2,
+            GET,
+            `http://localhost:${this.port}/session/${this.sessionId}/window/handles`,
+            null,
+            'Get Handles'
+        )
+        return res ? res.value : null
+    }
+    switchWindow(sessionId) {
+        this.sessionId = sessionId
+        const res = request(
+            this.IServerXMLHTTPRequest2,
+            GET,
+            `http://localhost:${this.port}/session/${this.sessionId}/window/`,
+            {},
+            'Switch Window'
+        )
+        return res ? res.value : null
+    }
 }
 
 class Document {
