@@ -331,8 +331,8 @@ function request(Server, method, url, parameter, processing, finished) {
         if (processing !== null) console.print(display)
         WScript.Sleep(50)
     }
-    if (finished != null) display = `${BOL}${finished}${eraseInLine(0)}`
-    console.print(display)
+    if (finished != null) display = `${BOL}${finished}}`
+    console.print(`${display}${eraseInLine(0)}${BOL}`)
 
     const res = Server.responseText
     return JSON.parse(res)
