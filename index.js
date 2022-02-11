@@ -10,6 +10,7 @@ const GET = 'GET'
 const POST = 'POST'
 const DELETE = 'DELETE'
 const BOL = cursorHrAbs(1) // beginning of line
+const EIL = eraseInLine(0) // erase in line
 const ELEMENT_ID = 'element-6066-11e4-a52e-4f735466cecf'
 const State = ['UNINITIALIZED', 'LOADING', 'LOADED', 'INTERACTIVE', 'COMPLETED']
 const spiner = progress(['|', '/', '-', '\\'])
@@ -327,12 +328,12 @@ function request(Server, method, url, parameter, processing, finished) {
 
     let display
     while (State[Server.readyState] != 'COMPLETED') {
-        display = `${BOL}${processing} ${spiner()}${eraseInLine(0)}`
+        display = `${BOL}${processing} ${spiner()}${EIL}`
         if (processing !== null) console.print(display)
         WScript.Sleep(50)
     }
     if (finished != null) display = `${BOL}${finished}}`
-    console.print(`${display}${eraseInLine(0)}${BOL}`)
+    console.print(`${display}${EIL}${BOL}`)
 
     const res = Server.responseText
     return JSON.parse(res)
