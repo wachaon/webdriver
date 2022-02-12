@@ -259,7 +259,7 @@ class Document {
             },
             'Select Elements'
         )
-        const elms = res || null
+        const elms = res != null ? res.value.map((val) => new Element(this, val[ELEMENT_ID])) : null
         return elms
     }
     getSource() {
