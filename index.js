@@ -61,52 +61,6 @@ class Window {
             'Navegate URL'
         )
     }
-    delete(message) {
-        request(
-            this.IServerXMLHTTPRequest2,
-            DELETE,
-            `http://localhost:${this.port}/session/${this.sessionId}`,
-            null,
-            'Delete Session'
-        )
-        this.driver.Terminate()
-        if (message != null) console.log(message)
-    }
-    close(message) {
-        request(
-            this.IServerXMLHTTPRequest2,
-            DELETE,
-            `http://localhost:${this.port}/session/${this.sessionId}/window`,
-            null,
-            'Close Window'
-        )
-        if (message != null) console.log(message)
-    }
-    quit(message) {
-        this.close()
-        this.delete(message)
-    }
-    move(handle) {
-        const currHandle = this.getHandle()
-        if (!handle) handle = this.getHandles().filter(hnd => hnd === currHandle ? false : true)[0]
-        this.switchTo(handle)
-        const url = this.getURL()
-        this.switchTo(currHandle)
-        this.navigate(url)
-        this.switchTo(handle)
-        this.close()
-        this.switchTo(currHandle)
-    }
-    getURL() {
-        const res = request(
-            this.IServerXMLHTTPRequest2,
-            GET,
-            `http://localhost:${this.port}/session/${this.sessionId}/url`,
-            null,
-            'Get URL'
-        )
-        return res ? res.value : null
-    }
     back() {
         request(
             this.IServerXMLHTTPRequest2,
@@ -125,6 +79,16 @@ class Window {
             'Forward History'
         )
     }
+    getURL() {
+        const res = request(
+            this.IServerXMLHTTPRequest2,
+            GET,
+            `http://localhost:${this.port}/session/${this.sessionId}/url`,
+            null,
+            'Get URL'
+        )
+        return res ? res.value : null
+    }
     getStatus() {
         const res = request(
             this.IServerXMLHTTPRequest2,
@@ -134,6 +98,84 @@ class Window {
             'Get Status'
         )
         if (res) return res.value
+    }
+    getHandle() {
+        const res = request(
+            this.IServerXMLHTTPRequest2,
+            GET,
+            `http://localhost:${this.port}/session/${this.sessionId}/window`,
+            null,
+            'Get Handle'
+        )
+        return res ? res.value : null
+    }
+    getHandles() {
+        const res = request(
+            this.IServerXMLHTTPRequest2,
+            GET,
+            `http://localhost:${this.port}/session/${this.sessionId}/window/handles`,
+            null,
+            'Get Handles'
+        )
+        return res ? res.value : null
+    }
+    switchTo(windowHandle) {
+        const res = request(
+            this.IServerXMLHTTPRequest2,
+            POST,
+            `http://localhost:${this.port}/session/${this.sessionId}/window`,
+            {
+                handle: windowHandle
+            },
+            'Switch Window'
+        )
+        return res ? res.value : null
+    }
+    move(handle) {
+        const currHandle = this.getHandle()
+        if (!handle) handle = this.getHandles().filter(hnd => hnd === currHandle ? false : true)[0]
+        this.switchTo(handle)
+        const url = this.getURL()
+        this.switchTo(currHandle)
+        this.navigate(url)
+        this.switchTo(handle)
+        this.close()
+        this.switchTo(currHandle)
+    }
+    newWindow() {
+        const res = request(
+            this.IServerXMLHTTPRequest2,
+            POST,
+            `http://localhost:${this.port}/session/${this.sessionId}/window/new`,
+            {},
+            'New Window'
+        )
+        return res ? res.value : null
+    }
+    close(message) {
+        request(
+            this.IServerXMLHTTPRequest2,
+            DELETE,
+            `http://localhost:${this.port}/session/${this.sessionId}/window`,
+            null,
+            'Close Window'
+        )
+        if (message != null) console.log(message)
+    }
+    delete(message) {
+        request(
+            this.IServerXMLHTTPRequest2,
+            DELETE,
+            `http://localhost:${this.port}/session/${this.sessionId}`,
+            null,
+            'Delete Session'
+        )
+        this.driver.Terminate()
+        if (message != null) console.log(message)
+    }
+    quit(message) {
+        this.close()
+        this.delete(message)
     }
     getCookie(name) {
         const url = `http://localhost:${this.port}/session/${this.sessionId}/cookie` + (name != null ? '/' + name : '')
@@ -161,48 +203,6 @@ class Window {
             'Delete Cookie'
         )
     }
-    getHandles() {
-        const res = request(
-            this.IServerXMLHTTPRequest2,
-            GET,
-            `http://localhost:${this.port}/session/${this.sessionId}/window/handles`,
-            null,
-            'Get Handles'
-        )
-        return res ? res.value : null
-    }
-    getHandle() {
-        const res = request(
-            this.IServerXMLHTTPRequest2,
-            GET,
-            `http://localhost:${this.port}/session/${this.sessionId}/window`,
-            null,
-            'Get Handle'
-        )
-        return res ? res.value : null
-    }
-    switchTo(windowHandle) {
-        const res = request(
-            this.IServerXMLHTTPRequest2,
-            POST,
-            `http://localhost:${this.port}/session/${this.sessionId}/window`,
-            {
-                handle: windowHandle
-            },
-            'Switch Window'
-        )
-        return res ? res.value : null
-    }
-    newWindow() {
-        const res = request(
-            this.IServerXMLHTTPRequest2,
-            POST,
-            `http://localhost:${this.port}/session/${this.sessionId}/window/new`,
-            {},
-            'New Window'
-        )
-        return res ? res.value : null
-    }
 }
 
 class Document {
@@ -224,29 +224,6 @@ class Document {
         const elms = res != null ? res.value.map((val) => new Element(this, val[ELEMENT_ID])) : null
         return elms
     }
-    getTitle() {
-        const window = this.parentWindow
-        return request(
-            window.IServerXMLHTTPRequest2,
-            GET,
-            `http://localhost:${window.port}/session/${window.sessionId}/title`
-        )
-    }
-    executeScript(script = function () { }, args = []) {
-        const code = `return (${String(script)})(...arguments)`
-        const window = this.parentWindow
-        const res = request(
-            window.IServerXMLHTTPRequest2,
-            POST,
-            `http://localhost:${window.port}/session/${window.sessionId}/execute/sync`,
-            {
-                script: code,
-                args
-            },
-            'Execute Script'
-        )
-        return res ? res.value : null
-    }
     xpath(path) {
         const window = this.parentWindow
         const res = request(
@@ -262,6 +239,14 @@ class Document {
         const elms = res != null ? res.value.map((val) => new Element(this, val[ELEMENT_ID])) : null
         return elms
     }
+    getTitle() {
+        const window = this.parentWindow
+        return request(
+            window.IServerXMLHTTPRequest2,
+            GET,
+            `http://localhost:${window.port}/session/${window.sessionId}/title`
+        )
+    }
     getSource() {
         const window = this.parentWindow
         const res = request(
@@ -270,6 +255,21 @@ class Document {
             `http://localhost:${window.port}/session/${window.sessionId}/source`,
             {},
             'Get Source'
+        )
+        return res ? res.value : null
+    }
+    executeScript(script = function () { }, args = []) {
+        const code = `return (${String(script)})(...arguments)`
+        const window = this.parentWindow
+        const res = request(
+            window.IServerXMLHTTPRequest2,
+            POST,
+            `http://localhost:${window.port}/session/${window.sessionId}/execute/sync`,
+            {
+                script: code,
+                args
+            },
+            'Execute Script'
         )
         return res ? res.value : null
     }
