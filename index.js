@@ -61,14 +61,7 @@ class Window {
             'Navegate URL'
         )
     }
-    close(message) {
-        request(
-            this.IServerXMLHTTPRequest2,
-            DELETE,
-            `http://localhost:${this.port}/session/${this.sessionId}/window`,
-            null,
-            'Close Window'
-        )
+    delete(message) {
         request(
             this.IServerXMLHTTPRequest2,
             DELETE,
@@ -78,6 +71,31 @@ class Window {
         )
         this.driver.Terminate()
         if (message != null) console.log(message)
+    }
+    close(message) {
+        request(
+            this.IServerXMLHTTPRequest2,
+            DELETE,
+            `http://localhost:${this.port}/session/${this.sessionId}/window`,
+            null,
+            'Close Window'
+        )
+        if (message != null) console.log(message)
+    }
+    quit(message) {
+        this.close()
+        this.delete(message)
+    }
+    move(handle) {
+        const currHandle = this.getHandle()
+        if (!handle) handle = this.getHandles().filter(hnd => hnd === currHandle ? false : true)[0]
+        this.switchTo(handle)
+        const url = this.getURL()
+        this.switchTo(currHandle)
+        this.navigate(url)
+        this.switchTo(handle)
+        this.close()
+        this.switchTo(currHandle)
     }
     getURL() {
         const res = request(
@@ -153,14 +171,35 @@ class Window {
         )
         return res ? res.value : null
     }
-    switchWindow(sessionId) {
-        this.sessionId = sessionId
+    getHandle() {
         const res = request(
             this.IServerXMLHTTPRequest2,
             GET,
-            `http://localhost:${this.port}/session/${this.sessionId}/window/`,
-            {},
+            `http://localhost:${this.port}/session/${this.sessionId}/window`,
+            null,
+            'Get Handle'
+        )
+        return res ? res.value : null
+    }
+    switchTo(windowHandle) {
+        const res = request(
+            this.IServerXMLHTTPRequest2,
+            POST,
+            `http://localhost:${this.port}/session/${this.sessionId}/window`,
+            {
+                handle: windowHandle
+            },
             'Switch Window'
+        )
+        return res ? res.value : null
+    }
+    newWindow() {
+        const res = request(
+            this.IServerXMLHTTPRequest2,
+            POST,
+            `http://localhost:${this.port}/session/${this.sessionId}/window/new`,
+            {},
+            'New Window'
         )
         return res ? res.value : null
     }
