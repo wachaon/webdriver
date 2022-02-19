@@ -1,10 +1,10 @@
 const WShell = require('WScript.Shell')
 const { eraseInLine, cursorHrAbs, color } = require('ansi')
-const { download } = require('filesystem')
+const { has } = require('argv')
+const { moveFileSync, deleteFileSync, deletedirSync, existsFileSync, existsdirSync, download } = require('filesystem')
 const { resolve, WorkingDirectory, toPosixSep } = require('pathname')
 const { unzip } = require('zip')
-const { moveFileSync, deleteFileSync, deletedirSync, existsFileSync, existsdirSync } = require('filesystem')
-const { has } = require('argv')
+const isCLI = require('isCLI')
 
 const GET = 'GET'
 const POST = 'POST'
@@ -133,7 +133,7 @@ class Window {
     }
     move(handle) {
         const currHandle = this.getHandle()
-        if (!handle) handle = this.getHandles().filter(hnd => hnd === currHandle ? false : true)[0]
+        if (!handle) handle = this.getHandles().filter((hnd) => (hnd === currHandle ? false : true))[0]
         this.switchTo(handle)
         const url = this.getURL()
         this.switchTo(currHandle)
@@ -176,32 +176,6 @@ class Window {
     quit(message) {
         this.close()
         this.delete(message)
-    }
-    getCookie(name) {
-        const url = `http://localhost:${this.port}/session/${this.sessionId}/cookie` + (name != null ? '/' + name : '')
-        const res = request(this.IServerXMLHTTPRequest2, GET, url, null, 'Get Cookie')
-        return res ? res.value : null
-    }
-    addCookie(cookie) {
-        // cookie: {name: string, value: string, domain: string?, httpOnly: boolean?, path: string?, secure: boolean?}
-        const parameter = { cookie: cookie }
-        const res = request(
-            this.IServerXMLHTTPRequest2,
-            POST,
-            `http://localhost:${this.port}/session/${this.sessionId}/cookie`,
-            parameter,
-            'Add Cookie'
-        )
-        return res ? res.value : null
-    }
-    deleteCookie(name) {
-        request(
-            this.IServerXMLHTTPRequest2,
-            DELETE,
-            `http://localhost:${this.port}/session/${this.sessionId}/cookie/${name}`,
-            null,
-            'Delete Cookie'
-        )
     }
 }
 
@@ -273,6 +247,54 @@ class Document {
         )
         return res ? res.value : null
     }
+    takeScreenShot() {
+        const window = this.parentWindow
+        const { document } = window
+        const res = request(
+            window.IServerXMLHTTPRequest2,
+            GET,
+            `http://localhost:${window.port}/session/${window.sessionId}/screenshot`,
+            {},
+            'Take ScreenShot'
+        )
+        if (!res) return null
+        const message = document.executeScript(() => document.readyState)
+        console.log('take screen shot %O', message)
+
+        const DOMDocument = require('MSXML2.DOMDocument.3.0')
+        const IXMLDOMElement = DOMDocument.createElement('base64')
+        IXMLDOMElement.dataType = 'bin.base64'
+        IXMLDOMElement.text = res.value
+        return IXMLDOMElement.nodeTypedValue
+    }
+    getCookie(name) {
+        const window = this.parentWindow
+        const url = `http://localhost:${window.port}/session/${window.sessionId}/cookie` + (name != null ? '/' + name : '')
+        const res = request(window.IServerXMLHTTPRequest2, GET, url, null, 'Get Cookie')
+        return res ? res.value : null
+    }
+    addCookie(cookie) {
+        // cookie: {name: string, value: string, domain: string?, httpOnly: boolean?, path: string?, secure: boolean?}
+        const window = this.parentWindow
+        const res = request(
+            window.IServerXMLHTTPRequest2,
+            POST,
+            `http://localhost:${window.port}/session/${window.sessionId}/cookie`,
+            { cookie },
+            'Add Cookie'
+        )
+        return res ? res.value : null
+    }
+    deleteCookie(name) {
+        const window = this.parentWindow
+        request(
+            window.IServerXMLHTTPRequest2,
+            DELETE,
+            `http://localhost:${window.port}/session/${window.sessionId}/cookie/${name}`,
+            null,
+            'Delete Cookie'
+        )
+    }
 }
 
 class Element {
@@ -340,44 +362,64 @@ class Element {
             'Input Value'
         )
     }
+    takeScreenShot() {
+        const window = this.parentWindow
+        const { document } = window
+        const res = request(
+            window.IServerXMLHTTPRequest2,
+            GET,
+            `http://localhost:${window.port}/session/${window.sessionId}/element/${this.elementId}/screenshot`,
+            {},
+            'Take ScreenShot'
+        )
+        if (!res) return null
+        const message = document.executeScript(() => document.readyState)
+        console.log('take screen shot %O', message)
+
+        const DOMDocument = require('MSXML2.DOMDocument.3.0')
+        const IXMLDOMElement = DOMDocument.createElement('base64')
+        IXMLDOMElement.dataType = 'bin.base64'
+        IXMLDOMElement.text = res.value
+        return IXMLDOMElement.nodeTypedValue
+    }
 }
 
 // util
 function getChromeVersion(spec = '"C:\\Program Files (x86)\\Google\\Chrome\\Application"') {
-    const [version] = WShell.exec(
-        `cmd /C dir /B /O-N ${spec}`
-    ).StdOut.ReadAll().trim().split(/\r?\n/).slice(-1)
+    const [version] = WShell.exec(`cmd /C dir /B /O-N ${spec}`).StdOut.ReadAll().trim().split(/\r?\n/).slice(-1)
     return version
 }
 
 function getChromeDriverVersion(spec = 'chromedriver.exe') {
-    return WShell.exec(
-        `cmd /C ${spec} -v`
-    ).StdOut.ReadAll().trim().replace(/^ChromeDriver ([\d\.]+) .+/, '$1')
+    return WShell.exec(`cmd /C ${spec} -v`)
+        .StdOut.ReadAll()
+        .trim()
+        .replace(/^ChromeDriver ([\d\.]+) .+/, '$1')
 }
 
 function getFireFoxVersion(spec = '"C:\\Program Files\\Mozilla Firefox\\firefox.exe"') {
-    return WShell.exec(
-        `cmd /C ${spec} -v`
-    ).StdOut.ReadAll().trim().slice('Mozilla Firefox '.length)
+    return WShell.exec(`cmd /C ${spec} -v`).StdOut.ReadAll().trim().slice('Mozilla Firefox '.length)
 }
 
 function getFireFoxDriverVersion(spec = 'geckodriver.exe') {
-    return WShell.exec(
-        `cmd /C ${spec} -V`
-    ).StdOut.ReadAll().trim().split(/\r?\n/)[0].replace(/^geckodriver ([\d\.]+) .+/, '$1')
+    return WShell.exec(`cmd /C ${spec} -V`)
+        .StdOut.ReadAll()
+        .trim()
+        .split(/\r?\n/)[0]
+        .replace(/^geckodriver ([\d\.]+) .+/, '$1')
 }
 
 function getEdgeVersion() {
-    return WShell.exec(
-        'powershell -Command Get-AppxPackage -Name Microsoft.MicrosoftEdge.* | foreach{$_.Version}'
-    ).StdOut.ReadAll().trim()
+    return WShell.exec('powershell -Command Get-AppxPackage -Name Microsoft.MicrosoftEdge.* | foreach{$_.Version}')
+        .StdOut.ReadAll()
+        .trim()
 }
 
 function getEdgeDriverVersion(spec = 'msedgedriver.exe') {
-    return WShell.exec(
-        `cmd /C ${spec} -v`
-    ).StdOut.ReadAll().trim().replace(/^MSEdgeDriver ([\d\.]+) .+/, '$1')
+    return WShell.exec(`cmd /C ${spec} -v`)
+        .StdOut.ReadAll()
+        .trim()
+        .replace(/^MSEdgeDriver ([\d\.]+) .+/, '$1')
 }
 
 function request(Server, method, url, parameter, processing, finished) {
@@ -426,9 +468,7 @@ function getEdgeWebDriver() {
     if (version === driver) return console.log('Both are installed with the correct version // => %O', version)
 
     const filename = 'msedgedriver.exe'
-    const architecture = WShell
-        .Environment('Process')
-        .Item('PROCESSOR_ARCHITECTURE') === 'x86' ? '32' : '64'
+    const architecture = WShell.Environment('Process').Item('PROCESSOR_ARCHITECTURE') === 'x86' ? '32' : '64'
 
     const url = `https://msedgedriver.azureedge.net/${version}/edgedriver_win${architecture}.zip`
     const zipSpec = resolve(WorkingDirectory, `edgedriver_win${architecture}.zip`)
@@ -436,7 +476,7 @@ function getEdgeWebDriver() {
     let fileSpec = resolve(WorkingDirectory, filename)
     try {
         console.log(download(url, zipSpec))
-        console.log('unzip %O', dirSpec = toPosixSep(unzip(zipSpec)))
+        console.log('unzip %O', (dirSpec = toPosixSep(unzip(zipSpec))))
         if (existsFileSync(fileSpec)) deleteFileSync(fileSpec)
         console.log(moveFileSync(resolve(dirSpec, filename), fileSpec))
         console.log(deletedirSync(dirSpec))
@@ -457,10 +497,8 @@ module.exports = {
     Document,
     Element,
     request,
-    getEdgeWebDriver,
+    getEdgeWebDriver
 }
 
 // command line
-if (wes.Modules[wes.main].path === __filename) {
-    if (has('d') || has('download')) getEdgeWebDriver()
-}
+if (isCLI(__filename) && (has('d') || has('download'))) getEdgeWebDriver()

@@ -52,12 +52,12 @@ let status = window.getStatus()
 console.log('Status: %O', status)
 
 const name = genGUID()
-window.addCookie({
+document.addCookie({
     name: name,
     value: genGUID()
 })
-console.log('getCookie(%O) // => %O', name, window.getCookie(name))
-window.deleteCookie(name)
+console.log('getCookie(%O) // => %O', name, document.getCookie(name))
+document.deleteCookie(name)
 
 window.close('finished')
 ```
