@@ -98,18 +98,6 @@ window.close('finished')
 
 ブラウザの履歴から一つ戻ります。
 
-### `getCookie(name)`
-
-クッキーを取得します。`name` があればその名前のクッキーを取得、`name` がなければ全てのクッキーを取得します。
-
-### `setCookie(object)`
-
-クッキーを設定します。
-
-### `deleteCookie(name)`
-
-`name` のクッキーを削除します。
-
 ## `Document` クラス
 
 *HTML Document* から必要な要素を指定するクラスになります。
@@ -141,6 +129,22 @@ document.executeScript(
     ["hello world"]
 )
 ```
+
+### `takeScreenShot()`
+
+スクリーンショットを撮ります。戻り値は `Byte[]` になります。
+
+### `getCookie(name)`
+
+クッキーを取得します。`name` があればその名前のクッキーを取得、`name` がなければ全てのクッキーを取得します。
+
+### `setCookie(object)`
+
+クッキーを設定します。
+
+### `deleteCookie(name)`
+
+`name` のクッキーを削除します。
 
 ## `Element` クラス
 
