@@ -26,7 +26,7 @@ wes webdriver --download
 下記スクリプトを実行して動作を確認してくだい。
 
 ```javascript
-const { Window } = require('edge')
+const { Window } = require('webdriver')
 const genGUID = require('genGUID')
 
 const window = new Window()
