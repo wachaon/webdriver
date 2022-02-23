@@ -363,8 +363,8 @@ class Element {
         )
     }
     takeScreenShot() {
-        const window = this.parentWindow
-        const { document } = window
+        const document = this.parentDocument
+        const window = document.parentWindow
         const res = request(
             window.IServerXMLHTTPRequest2,
             GET,
