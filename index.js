@@ -15,22 +15,25 @@ const ELEMENT_ID = 'element-6066-11e4-a52e-4f735466cecf'
 const State = ['UNINITIALIZED', 'LOADING', 'LOADED', 'INTERACTIVE', 'COMPLETED']
 const spiner = progress(['|', '/', '-', '\\'])
 const orange = color('#FFA500')
+const EDGE = 'msedgedriver.exe'
+const CHROME = 'chromedriver.exe'
+const GECKO = 'geckodriver.exe'
 
 class Window {
-    constructor(port, spec) {
+    constructor(port, spec = EDGE, parameter = { capabilities: {} }) {
         const IServerXMLHTTPRequest2 = require('MSXML2.ServerXMLHTTP')
 
         port = port || findUnusedPort(9515)
-        spec = spec || 'msedgedriver.exe'
+        spec = spec.toUpperCase() === 'CHROME' ? CHROME :
+            spec.toUpperCase() === 'GECKO' ? GECKO :
+                spec.toUpperCase() === 'EDGE' ? EDGE : spec
         const driver = WShell.Exec(`${spec} --port=${port} --silent`)
 
         var { value } = request(
             IServerXMLHTTPRequest2,
             POST,
             `http://localhost:${port}/session`,
-            {
-                capabilities: {}
-            },
+            parameter,
             'Initialize Session'
         )
         const { sessionId } = value
@@ -390,7 +393,7 @@ function getChromeVersion(spec = '"C:\\Program Files (x86)\\Google\\Chrome\\Appl
     return version
 }
 
-function getChromeDriverVersion(spec = 'chromedriver.exe') {
+function getChromeDriverVersion(spec = CHROME) {
     return WShell.exec(`cmd /C ${spec} -v`)
         .StdOut.ReadAll()
         .trim()
@@ -401,7 +404,7 @@ function getFireFoxVersion(spec = '"C:\\Program Files\\Mozilla Firefox\\firefox.
     return WShell.exec(`cmd /C ${spec} -v`).StdOut.ReadAll().trim().slice('Mozilla Firefox '.length)
 }
 
-function getFireFoxDriverVersion(spec = 'geckodriver.exe') {
+function getFireFoxDriverVersion(spec = GECKO) {
     return WShell.exec(`cmd /C ${spec} -V`)
         .StdOut.ReadAll()
         .trim()
@@ -415,7 +418,7 @@ function getEdgeVersion() {
         .trim()
 }
 
-function getEdgeDriverVersion(spec = 'msedgedriver.exe') {
+function getEdgeDriverVersion(spec = EDGE) {
     return WShell.exec(`cmd /C ${spec} -v`)
         .StdOut.ReadAll()
         .trim()
