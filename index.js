@@ -427,18 +427,21 @@ function getEdgeDriverVersion(spec = EDGE) {
 
 function request(Server, method, url, parameter, processing, finished) {
     Server.open(method, url, true)
-    if (method.toUpperCase === POST) Server.setRequestHeader('Content-Type', 'application/json')
+    if (method.toUpperCase() === POST) Server.setRequestHeader('Content-Type', 'application/json')
     if (parameter != null) Server.send(JSON.stringify(parameter))
     else Server.send()
 
     let display
     while (State[Server.readyState] != 'COMPLETED') {
-        display = `${BOL}${processing} ${spiner()}${EIL}`
-        if (processing !== null) console.print(display)
+        if (processing !== null) console.print(`${BOL}${processing} ${spiner()} ${State[Server.readyState]}${EIL}`)
         WScript.Sleep(50)
     }
-    if (finished != null) display = `${BOL}${finished}}`
-    console.print(`${display}${EIL}${BOL}`)
+
+    if (Server.status != 200) {
+        throw new Error('Server Error: ' + Server.status + '\nurl: ' + url + '\nparameter: ' + parameter != null ? JSON.stringify(parameter, null, 2) : '{}')
+    }
+
+    console.print(`${BOL}${finished != null ? finished : ''}${display}${EIL}${BOL}`)
 
     const res = Server.responseText
     return JSON.parse(res)
