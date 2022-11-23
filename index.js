@@ -38,10 +38,21 @@ class Window {
         )
         const { sessionId } = value
 
+
         this.port = port
         this.driver = driver
         this.sessionId = sessionId
         this.IServerXMLHTTPRequest2 = IServerXMLHTTPRequest2
+
+        const handle = request(
+            this.IServerXMLHTTPRequest2,
+            GET,
+            `http://localhost:${this.port}/session/${this.sessionId}/window`,
+            null,
+            'Get Handle'
+        )
+        this.handle = handle ? handle.value : null
+
         this.document = new Document(this)
     }
     rect(prop) {
