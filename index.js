@@ -143,7 +143,10 @@ class Window {
             },
             'Switch Window'
         )
-        return res ? res.value : null
+        if (res) {
+            this.handle = windowHandle
+            return res.value
+        } return null
     }
     move(handle) {
         const currHandle = this.getHandle()
@@ -376,6 +379,16 @@ class Element {
             'Input Value'
         )
     }
+    clearValue(text) {
+        const window = this.parentDocument.parentWindow
+        request(
+            window.IServerXMLHTTPRequest2,
+            POST,
+            `http://localhost:${window.port}/session/${window.sessionId}/element/${this.elementId}/clear`,
+            {},
+            'Clear Value'
+        )
+    }
     takeScreenShot() {
         const document = this.parentDocument
         const window = document.parentWindow
@@ -444,7 +457,7 @@ function request(Server, method, url, parameter, processing, finished) {
 
     let display
     while (State[Server.readyState] != 'COMPLETED') {
-        if (processing !== null) console.print(`${BOL}${processing} ${spiner()} ${State[Server.readyState]}${EIL}`)
+        if (processing !== null) console.weaklog(`${processing} ${spiner()} ${State[Server.readyState]}`)
         WScript.Sleep(50)
     }
 
@@ -452,7 +465,7 @@ function request(Server, method, url, parameter, processing, finished) {
         throw new Error('Server Error: ' + Server.status + '\nurl: ' + url + '\nparameter: ' + parameter != null ? JSON.stringify(parameter, null, 2) : '{}')
     }
 
-    console.print(`${BOL}${finished != null ? finished : ''}${display}${EIL}${BOL}`)
+    console.weaklog(`${finished || ''}${display}`)
 
     const res = Server.responseText
     return JSON.parse(res)
