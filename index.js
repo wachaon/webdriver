@@ -24,10 +24,15 @@ class Window {
         const IServerXMLHTTPRequest2 = require('MSXML2.ServerXMLHTTP')
 
         port = port || findUnusedPort(9515)
+        console.debug(() => port)
+
         spec = spec.toUpperCase() === 'CHROME' ? CHROME :
             spec.toUpperCase() === 'GECKO' ? GECKO :
                 spec.toUpperCase() === 'EDGE' ? EDGE : spec
+        console.debug(() => spec)
+
         const driver = WShell.Exec(`${spec} --port=${port} --silent`)
+        console.debug(() => driver)
 
         var { value } = request(
             IServerXMLHTTPRequest2,
@@ -36,8 +41,10 @@ class Window {
             parameter,
             'Initialize Session'
         )
-        const { sessionId } = value
+        console.debug(() => value)
 
+        const { sessionId } = value
+        console.debug(() => sessionId)
 
         this.port = port
         this.driver = driver
@@ -485,7 +492,7 @@ function findUnusedPort(port) {
 
     while (true) {
         port = port || parseInt(Math.random() * (65535 - 49152)) + 49152
-        const exp = new RegExp('(TCP|UDP)\\s+\\d{1,3}.\\d{1,3}.\\d{1,3}.\\d{1,3}:' + port + '\\s')
+        const exp = new RegExp(port + '\\s*$', 'm')
         if (!exp.test(res)) break
         port = null
     }
